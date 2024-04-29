@@ -10,7 +10,7 @@ import lombok.*;
 @Table
 @Setter
 @Getter
-public class Car {
+public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
