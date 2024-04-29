@@ -1,16 +1,10 @@
 package com.example.CrudTest.controller;
-
 import com.example.CrudTest.entities.Car;
 import com.example.CrudTest.repositories.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -20,33 +14,23 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 @RequestMapping("/car")
 public class CarController {
     @Autowired
-    //meglio private o default?
     private CarRepository carRepository;
 
    //crea una nuova car nella tabella
     @PostMapping()
-    public Car create(@RequestBody Car car) {
-        Car carSaved = carRepository.saveAndFlush(car);
-        return carSaved;
+    public ResponseEntity<Car> create(@RequestBody Car car) {
+        carRepository.saveAndFlush(car);
+        return ResponseEntity.ok().build();
 
     }
     //una lista pagable di tutte le cars
-    @GetMapping
-    public Page<Car> getAll(@RequestParam(required = false) Optional<Integer> page, @RequestParam(required = false) Optional<Integer> size) {
-        if (page.isPresent() && size.isPresent()) {
-            Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "modelName"));
-            Pageable pageable = PageRequest.of(page.get(), size.get(), sort);
-            Page<Car> cars = carRepository.findAll(pageable);
-            return cars;
-        } else {
-            Page<Car> carPage = Page.empty();
-            return carPage;
-
-        }
+    @GetMapping("/")
+    public ResponseEntity<Car> getAll() {
+        carRepository.findAll();
+        return ResponseEntity.ok().build();
     }
     //trova una car by id
     @GetMapping("/{id}")
-    //rappresenta un'intera httpResponse
     public ResponseEntity<Car> getById(@PathVariable Long id) {
 
         //ritorna null se non trova corrispondenza
@@ -82,8 +66,9 @@ public class CarController {
     }
 
     @DeleteMapping("")
-    public void deleteAll(@RequestParam List<Long> ids){
+    public ResponseEntity<Car> deleteAll(@RequestParam List<Long> ids){
         carRepository.deleteAllById(ids);
+        return ResponseEntity.ok().build();
     }
 
 }
